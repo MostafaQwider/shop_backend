@@ -37,7 +37,7 @@ dotenv for environment configuration
 
 Clone the repo:
 
-git clone https://github.com/your-username/shop-backend.git
+git clone https://github.com/MostafaQwider/shop-backend.git
 cd shop-backend
 
 
