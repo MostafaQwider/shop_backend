@@ -8,7 +8,7 @@ const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, address } = req.body;
+    const { name, email, password } = req.body;
 
     if (!email || !password || !name) {
       return sendResponse(res, false, "Name, email and password required", null, 400);

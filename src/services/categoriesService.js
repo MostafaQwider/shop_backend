@@ -4,3 +4,6 @@ exports.findById = model.findById;
 exports.list = model.list;
 exports.update = model.update;
 exports.remove = model.remove;
+exports.listWithSubcategories =(lang)=>{
+   return  model.listWithSubcategories(lang);
+}

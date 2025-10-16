@@ -10,3 +10,6 @@ exports.createVariant = model.createVariant;
 
 exports.listImages = model.listImages;
 exports.createImage = model.createImage;
+exports.listWithDetails = (lang) => {
+  return model.listWithDetails(lang);
+};

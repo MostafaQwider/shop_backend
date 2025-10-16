@@ -1,8 +1,8 @@
 const db = require('../db');
 
-exports.create = async ({ name, email, password, address, role = 'customer' }) => {
-  const sql = `INSERT INTO users (name,email,password,role,address) VALUES ($1,$2,$3,$4,$5) RETURNING id`;
-  const r = await db.query(sql, [name,email,password,role,address]);
+exports.create = async ({ name, email, password, role = 'customer' }) => {
+  const sql = `INSERT INTO users (name,email,password,role) VALUES ($1,$2,$3,$4) RETURNING id`;
+  const r = await db.query(sql, [name, email, password, role]);
   return r.rows[0].id;
 };
 
@@ -12,12 +12,12 @@ exports.findByEmail = async (email) => {
 };
 
 exports.findById = async (id) => {
-  const r = await db.query('SELECT id,name,email,role,address,created_at FROM users WHERE id=$1', [id]);
+  const r = await db.query('SELECT id, name, email, role, created_at FROM users WHERE id=$1', [id]);
   return r.rows[0];
 };
 
 exports.list = async () => {
-  const r = await db.query('SELECT id,name,email,role,address,created_at FROM users ORDER BY id DESC');
+  const r = await db.query('SELECT id, name, email, role, created_at FROM users ORDER BY id DESC');
   return r.rows;
 };
 
@@ -25,7 +25,7 @@ exports.update = async (id, data) => {
   const fields = [];
   const values = [];
   let idx = 1;
-  for (const k of ['name','email','password','address','role']) {
+  for (const k of ['name', 'email', 'password', 'role']) { // حذف address من هنا
     if (data[k] !== undefined) {
       fields.push(k + '=$' + idx);
       values.push(data[k]);

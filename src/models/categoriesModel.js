@@ -33,3 +33,60 @@ exports.remove = async (id) => {
   await db.query('DELETE FROM categories WHERE id=$1', [id]);
   return true;
 };
+exports.listWithSubcategories = async (lang = 'en') => {
+  const sql = `
+    SELECT 
+      c.id AS category_id,
+      c.image_url,
+      ct.name,
+      COALESCE(
+        json_agg(
+          jsonb_build_object(
+            'id', sc.id,
+            'image_url', sc.image_url,
+            'name', sct.name
+          )
+        ) FILTER (WHERE sc.id IS NOT NULL), '[]'
+      ) AS subcategories
+    FROM categories c
+    JOIN category_translations ct 
+      ON ct.category_id = c.id AND ct.language_code = $1
+    LEFT JOIN categories sc ON sc.parent_id = c.id
+    LEFT JOIN category_translations sct 
+      ON sct.category_id = sc.id AND sct.language_code = $1
+    WHERE c.parent_id IS NULL
+    GROUP BY c.id, c.image_url, ct.name
+    ORDER BY c.id
+  `;
+  const r = await db.query(sql, [lang]);
+  return r.rows;
+};
+
+/*
+[
+  {
+    "category_id": 1,
+    "image_url": "/images/men.png",
+    "name": "Men",
+    "subcategories": [
+      {
+        "id": 2,
+        "image_url": "/images/shirts.png",
+        "name": "Shirts"
+      },
+      {
+        "id": 5,
+        "image_url": "/images/pants.png",
+        "name": "Pants"
+      }
+    ]
+  },
+  {
+    "category_id": 3,
+    "image_url": "/images/clothes.png",
+    "name": "Clothes",
+    "subcategories": []
+  }
+]
+
+*/

@@ -3,16 +3,36 @@ const router = express.Router();
 const productsController = require('../controllers/productsController');
 const auth = require('../middlewares/auth');
 
+// جلب كل المنتجات
 router.get('/', productsController.list);
-router.get('/:id', productsController.getById);
+
+// جلب كل المنتجات مع التفاصيل
+router.get('/details', productsController.listWithDetails);
+
+// جلب منتج محدد حسب query parameter
+router.get('/get', productsController.getById);
+
+// إنشاء منتج (محمي)
 router.post('/', auth.requireAuth, productsController.create);
-router.put('/:id', auth.requireAuth, productsController.update);
-router.delete('/:id', auth.requireAuth, productsController.remove);
+
+// تحديث منتج حسب query parameter
+router.put('/update', auth.requireAuth, productsController.update);
+
+// حذف منتج حسب query parameter
+router.delete('/delete', auth.requireAuth, productsController.remove);
 
 // nested resources (variants, images, translations)
-router.get('/:id/variants', productsController.listVariants);
-router.post('/:id/variants', auth.requireAuth, productsController.createVariant);
-router.get('/:id/images', productsController.listImages);
-router.post('/:id/images', auth.requireAuth, productsController.createImage);
+
+// جلب المتغيرات حسب query parameter
+router.get('/variants', productsController.listVariants);
+
+// إنشاء متغير جديد حسب query parameter (محمي)
+router.post('/variants', auth.requireAuth, productsController.createVariant);
+
+// جلب الصور حسب query parameter
+router.get('/images', productsController.listImages);
+
+// إنشاء صورة جديدة حسب query parameter (محمي)
+router.post('/images', auth.requireAuth, productsController.createImage);
 
 module.exports = router;
