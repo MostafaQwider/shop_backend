@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Shop Backend (Node.js + Express)
 
 This project is an MVC + service-layer Node.js backend for the provided PostgreSQL schema.
@@ -76,4 +75,3 @@ JWT_SECRET=your_secret_key
 Run the server:
 
 npm start
->>>>>>> 717542ecb3e03d487a37b885dfba7ba1f6fb01e1
