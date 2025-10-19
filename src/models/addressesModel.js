@@ -42,11 +42,14 @@ exports.createAddress = async ({
   house_number = null,
   company_number = null,
   company_name = null,
+  city,
+  country,
+
 }) => {
   const r = await db.query(
     `INSERT INTO addresses
-      (user_id, street_name, additional_directions, phone_number, address_type, building_number, floor, house_number, company_number, company_name)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      (user_id, street_name, additional_directions, phone_number, address_type, building_number, floor, house_number, company_number, company_name,city,country)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
      RETURNING *`,
     [
       user_id,
@@ -59,6 +62,8 @@ exports.createAddress = async ({
       house_number,
       company_number,
       company_name,
+      city,
+      country,
     ]
   );
 
