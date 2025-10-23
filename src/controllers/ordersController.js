@@ -7,7 +7,7 @@ const sendResponse = require('../helpers/responseHelper');
 exports.createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { total, payment_method, payment_transaction_id, items } = req.body;
+    const { total, address_id,payment_transaction_id, items } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return sendResponse(res, false, "Items are required", null, 400);
@@ -16,7 +16,7 @@ exports.createOrder = async (req, res) => {
     const id = await service.createOrder({
       user_id: userId,
       total,
-      payment_method,
+      address_id,
       payment_transaction_id,
       items
     });
