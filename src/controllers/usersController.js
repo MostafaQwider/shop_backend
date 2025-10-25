@@ -10,22 +10,26 @@ exports.list = async (req, res) => {
   }
 };
 
-exports.getById = async (req, res) => {
+// ✅ جلب بيانات المستخدم الحالي من التوكن
+exports.getCurrentUser = async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = req.user.id; // أخذ الـ id من التوكن
     const user = await usersService.findById(id);
+
     if (!user) {
       return sendResponse(res, false, "User not found", null, 404);
     }
+
     sendResponse(res, true, "User fetched successfully", user);
   } catch (err) {
     sendResponse(res, false, err.message, null, 500);
   }
 };
 
-exports.update = async (req, res) => {
+// ✅ تحديث بيانات المستخدم الحالي
+exports.updateCurrentUser = async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = req.user.id;
     const updated = await usersService.update(id, req.body);
     sendResponse(res, true, "User updated successfully", updated);
   } catch (err) {
@@ -33,9 +37,10 @@ exports.update = async (req, res) => {
   }
 };
 
-exports.remove = async (req, res) => {
+// ✅ حذف المستخدم الحالي
+exports.removeCurrentUser = async (req, res) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = req.user.id;
     await usersService.remove(id);
     sendResponse(res, true, "User deleted successfully");
   } catch (err) {
