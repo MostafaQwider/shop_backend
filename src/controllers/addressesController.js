@@ -65,6 +65,7 @@ exports.deleteAddress = async (req, res) => {
 exports.listForUser = async (req, res) => {
   try {
     const user_id = req.user.id;
+
     const addresses = await service.listForUser(user_id);
 
     sendResponse(res, true, "Addresses fetched successfully", addresses);

@@ -149,7 +149,7 @@ exports.login = async (req, res) => {
     if (!ok) return sendResponse(res, false, "Invalid credentials", null, 400);
 
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, secret, { expiresIn });
-    sendResponse(res, true, "Login successful", { user: { id: user.id, name: user.name, email: user.email }, token });
+    sendResponse(res, true, "Login successful", { user: { id: user.id, name: user.name, email: user.email,is_verified:user.is_verified }, token });
 
   } catch (err) {
     console.error(err);
