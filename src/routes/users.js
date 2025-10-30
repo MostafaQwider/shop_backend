@@ -7,13 +7,13 @@ const auth = require('../middlewares/auth');
 router.use(auth.requireAuth);
 
 // ✅ جلب بيانات المستخدم الحالي من التوكن
-router.get('/me', usersController.getCurrentUser);
+router.get('/profile', usersController.getCurrentUser);
 
 // ✅ تحديث بيانات المستخدم الحالي
-router.put('/me', usersController.updateCurrentUser);
+router.put('/profile', usersController.updateCurrentUser);
 
 // ✅ حذف الحساب الحالي
-router.delete('/me', usersController.removeCurrentUser);
+router.delete('/profile', usersController.removeCurrentUser);
 
 // ✅ فقط المشرف يمكنه استعراض جميع المستخدمين (اختياري)
 router.get('/', usersController.list);

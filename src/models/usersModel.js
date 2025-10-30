@@ -1,7 +1,8 @@
 const db = require('../db');
 
 exports.create = async ({ name, email, password, role = 'customer' }) => {
-  const sql = `INSERT INTO users (name,email,password,role) VALUES ($1,$2,$3,$4) RETURNING id`;
+  const sql = `INSERT INTO users (name, email, password, role) 
+               VALUES ($1, $2, $3, $4) RETURNING id`;
   const r = await db.query(sql, [name, email, password, role]);
   return r.rows[0].id;
 };
@@ -12,12 +13,20 @@ exports.findByEmail = async (email) => {
 };
 
 exports.findById = async (id) => {
-  const r = await db.query('SELECT id, name, email, role, created_at FROM users WHERE id=$1', [id]);
+  const r = await db.query(
+    `SELECT id, name, email, role, created_at, 
+            is_verified, verification_code, verification_code_expires, 
+            reset_code, reset_code_expires 
+     FROM users WHERE id=$1`, [id]
+  );
   return r.rows[0];
 };
 
 exports.list = async () => {
-  const r = await db.query('SELECT id, name, email, role, created_at FROM users ORDER BY id DESC');
+  const r = await db.query(
+    `SELECT id, name, email, role, created_at, is_verified 
+     FROM users ORDER BY id DESC`
+  );
   return r.rows;
 };
 
@@ -25,14 +34,27 @@ exports.update = async (id, data) => {
   const fields = [];
   const values = [];
   let idx = 1;
-  for (const k of ['name', 'email', 'password', 'role']) { // حذف address من هنا
+
+  for (const k of [
+    'name',
+    'email',
+    'password',
+    'role',
+    'verification_code',
+    'verification_code_expires',
+    'is_verified',
+    'reset_code',
+    'reset_code_expires'
+  ]) {
     if (data[k] !== undefined) {
-      fields.push(k + '=$' + idx);
+      fields.push(`${k}=$${idx}`);
       values.push(data[k]);
       idx++;
     }
   }
+
   if (!fields.length) return this.findById(id);
+
   const sql = `UPDATE users SET ${fields.join(',')} WHERE id=$${idx} RETURNING id`;
   values.push(id);
   const r = await db.query(sql, values);
