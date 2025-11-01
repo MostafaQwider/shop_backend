@@ -14,7 +14,7 @@ exports.findByEmail = async (email) => {
 
 exports.findById = async (id) => {
   const r = await db.query(
-    `SELECT id, name, email, role, created_at, 
+    `SELECT id, name, email, role,password, created_at, 
             is_verified, verification_code, verification_code_expires, 
             reset_code, reset_code_expires 
      FROM users WHERE id=$1`, [id]

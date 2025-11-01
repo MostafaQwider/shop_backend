@@ -258,7 +258,7 @@ exports.verifyResetCode = async (req, res) => {
  */
 exports.resetPassword = async (req, res) => {
   try {
-    const { email, code, newPassword } = req.body;
+    const { email, newPassword } = req.body;
     const user = await usersService.findByEmail(email);
     if (!user) return sendResponse(res, false, "Email not found", null, 404);
 
@@ -292,7 +292,6 @@ exports.changePassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user.id;
     const user = await usersService.findById(userId);
-
     const ok = await bcrypt.compare(oldPassword, user.password);
     if (!ok) return sendResponse(res, false, "Old password is incorrect", null, 400);
 
