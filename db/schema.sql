@@ -3,6 +3,24 @@
 BEGIN;
 
 
+CREATE TABLE IF NOT EXISTS public.addresses
+(
+    id serial NOT NULL,
+    user_id integer NOT NULL,
+    street_name character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    additional_directions text COLLATE pg_catalog."default",
+    phone_number character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    address_type character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    building_number integer,
+    floor integer,
+    house_number integer,
+    company_number integer,
+    company_name character varying(255) COLLATE pg_catalog."default",
+    city character varying(100) COLLATE pg_catalog."default",
+    country character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT addresses_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.categories
 (
     id serial NOT NULL,
@@ -32,9 +50,11 @@ CREATE TABLE IF NOT EXISTS public.order_items
 (
     id serial NOT NULL,
     order_id integer NOT NULL,
-    variant_id integer NOT NULL,
     quantity integer NOT NULL,
     price numeric(10, 2) NOT NULL,
+    color_id integer,
+    size_id integer,
+    product_id integer,
     CONSTRAINT order_items_pkey PRIMARY KEY (id)
 );
 
@@ -47,6 +67,8 @@ CREATE TABLE IF NOT EXISTS public.orders
     payment_method character varying(50) COLLATE pg_catalog."default" DEFAULT 'paypal'::character varying,
     payment_transaction_id character varying(100) COLLATE pg_catalog."default",
     created_at timestamp without time zone DEFAULT now(),
+    address_id integer,
+    expected_delivery_time character varying(100) COLLATE pg_catalog."default" DEFAULT 'Not Assigned'::character varying,
     CONSTRAINT orders_pkey PRIMARY KEY (id)
 );
 
@@ -115,11 +137,22 @@ CREATE TABLE IF NOT EXISTS public.users
     email character varying(150) COLLATE pg_catalog."default" NOT NULL,
     password character varying(255) COLLATE pg_catalog."default" NOT NULL,
     role character varying(20) COLLATE pg_catalog."default" DEFAULT 'customer'::character varying,
-    address character varying(255) COLLATE pg_catalog."default",
     created_at timestamp without time zone DEFAULT now(),
+    is_verified boolean DEFAULT false,
+    verification_code character varying(10) COLLATE pg_catalog."default",
+    verification_code_expires timestamp without time zone,
+    reset_code character varying(10) COLLATE pg_catalog."default",
+    reset_code_expires timestamp without time zone,
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT users_email_key UNIQUE (email)
 );
+
+ALTER TABLE IF EXISTS public.addresses
+    ADD CONSTRAINT addresses_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE CASCADE;
+
 
 ALTER TABLE IF EXISTS public.categories
     ADD CONSTRAINT fk_parent FOREIGN KEY (parent_id)
@@ -136,6 +169,13 @@ ALTER TABLE IF EXISTS public.category_translations
 
 
 ALTER TABLE IF EXISTS public.order_items
+    ADD CONSTRAINT order_items_color_id_fkey FOREIGN KEY (color_id)
+    REFERENCES public.colors (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE SET NULL;
+
+
+ALTER TABLE IF EXISTS public.order_items
     ADD CONSTRAINT order_items_order_id_fkey FOREIGN KEY (order_id)
     REFERENCES public.orders (id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -143,10 +183,24 @@ ALTER TABLE IF EXISTS public.order_items
 
 
 ALTER TABLE IF EXISTS public.order_items
-    ADD CONSTRAINT order_items_variant_id_fkey FOREIGN KEY (variant_id)
-    REFERENCES public.product_variants (id) MATCH SIMPLE
+    ADD CONSTRAINT order_items_product_id_fkey FOREIGN KEY (product_id)
+    REFERENCES public.products (id) MATCH SIMPLE
     ON UPDATE NO ACTION
-    ON DELETE NO ACTION;
+    ON DELETE CASCADE;
+
+
+ALTER TABLE IF EXISTS public.order_items
+    ADD CONSTRAINT order_items_size_id_fkey FOREIGN KEY (size_id)
+    REFERENCES public.sizes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE SET NULL;
+
+
+ALTER TABLE IF EXISTS public.orders
+    ADD CONSTRAINT orders_address_id_fkey FOREIGN KEY (address_id)
+    REFERENCES public.addresses (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE SET NULL;
 
 
 ALTER TABLE IF EXISTS public.orders
