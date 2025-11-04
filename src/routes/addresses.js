@@ -7,7 +7,7 @@ const auth = require('../middlewares/auth');
 router.post('/', auth.requireAuth, addressesController.createAddress);
 
 // جلب عنوان حسب id (الآن id في query parameter)
-router.get('/', auth.requireAuth, addressesController.getById);
+router.get('/', addressesController.getById);
 
 // تحديث عنوان حسب id (id في query parameter)
 router.put('/', auth.requireAuth, addressesController.updateAddress);
