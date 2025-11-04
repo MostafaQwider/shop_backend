@@ -1,5 +1,5 @@
 const { getPaypalConfig } = require("../services/paypalService");
-const sendResponse = require("../helpers/sendResponse");
+const sendResponse = require('../helpers/responseHelper');
 
 // Controller لإرسال إعدادات PayPal للعميل
 const getPaypalConfigController = (req, res) => {
