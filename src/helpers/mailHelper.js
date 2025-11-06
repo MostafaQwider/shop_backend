@@ -1,18 +1,26 @@
-const nodemailer = require('nodemailer');
+// mailer.js
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD, // App Password من Google
-  },
-});
+// إنشاء كائن Resend باستخدام مفتاح البيئة
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+/**
+ * إرسال كود تحقق عبر البريد الإلكتروني
+ * @param {string} toEmail - البريد المستلم
+ * @param {string} code - كود التحقق
+ * @param {string} subject - عنوان الرسالة (اختياري)
+ */
 exports.sendCode = async (toEmail, code, subject = "Verification Code") => {
-  await transporter.sendMail({
-    from: `"Shopingo App" <${process.env.GMAIL_USER}>`,
-    to: toEmail,
-    subject,
-    text: `Your code is: ${code}`,
-  });
+  try {
+    await resend.emails.send({
+      from: 'Shopingo App <onboarding@resend.dev>', // لا يمكن تغييره إلا بعد توثيق نطاقك
+      to: toEmail,
+      subject,
+      html: `<p>Your verification code is: <strong>${code}</strong></p>`,
+    });
+
+    console.log(`✅ Verification code sent to ${toEmail}`);
+  } catch (error) {
+    console.error('❌ Failed to send email:', error.message);
+  }
 };
