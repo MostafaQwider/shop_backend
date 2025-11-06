@@ -143,7 +143,6 @@ exports.login = async (req, res) => {
     const user = await usersService.findByEmail(email);
     if (!user) return sendResponse(res, false, "Invalid credentials", null, 400);
 
-    if (!user.is_verified) return sendResponse(res, false, "Account not verified", null, 400);
 
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) return sendResponse(res, false, "Invalid credentials", null, 400);
