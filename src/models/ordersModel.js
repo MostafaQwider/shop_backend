@@ -156,3 +156,36 @@ exports.listForUser = async (userId) => {
 
   return r.rows;
 };
+
+// 🟠 تحديث طلب
+exports.update = async (id, fields) => {
+  // نبني قائمة الأعمدة التي سيتم تحديثها ديناميكياً
+  const allowedFields = [
+    'status',
+    'payment_method',
+    'payment_transaction_id',
+    'expected_delivery_time',
+    'total',
+    'address_id'
+  ];
+
+  // فلترة الحقول المدخلة بناءً على المسموح به
+  const keys = Object.keys(fields).filter((key) => allowedFields.includes(key));
+  if (keys.length === 0) {
+    throw new Error('No valid fields to update');
+  }
+
+  // بناء جملة SET للديناميكية
+  const setClause = keys.map((key, idx) => `${key} = $${idx + 2}`).join(', ');
+  const values = keys.map((key) => fields[key]);
+
+  const query = `
+    UPDATE orders
+    SET ${setClause}
+    WHERE id = $1
+    RETURNING *
+  `;
+
+  const r = await db.query(query, [id, ...values]);
+  return r.rows[0];
+};
